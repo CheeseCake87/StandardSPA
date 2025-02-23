@@ -1,0 +1,29 @@
+{% extends 'testing/extends/main.html' %}
+
+{% block content %}
+    <div style="display: flex; flex-direction: row; align-items: center; gap: 2rem; margin-bottom: 2rem;">
+        <div>
+            <h2 style="margin: 0;">Blueprint: testing</h2>
+            <h3>Here's your new blueprint.</h3>
+
+            <p>
+                Session['auth'] = {{ session.auth }}
+            </p>
+
+            <ul>
+                <li>
+                    <a href="{{ url_for('testing.login') }}">Login</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('testing.logout') }}">Logout</a>
+                </li>
+                <li>
+                    <a href="{{ url_for('testing.auth') }}">Check Auth</a>
+                </li>
+            </ul>
+
+            <a href="http://127.0.0.1:5002">Go to frontend app (http://127.0.0.1:5002)</a>
+
+        </div>
+    </div>
+{% endblock %}

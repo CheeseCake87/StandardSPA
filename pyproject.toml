@@ -1,0 +1,40 @@
+[project]
+name = "StandardSPA"
+version = "0.1.0"
+description = "This is a standard single page application structure."
+requires-python = ">=3.12"
+dependencies = [
+    "flask>=3.1.0",
+    "flask-imp==5.7.0",
+    "flask-sqlalchemy>=3.1.1",
+    "flask-vite-transporter>=2.0.2",
+    "huey>=2.5.2",
+    "pytz>=2025.1",
+    "requests>=2.32.3",
+    "websockets>=15.0",
+]
+
+[dependency-groups]
+dev = [
+    "faker>=36.1.1",
+    "pyqwe>=2.1.1",
+    "watchdog>=6.0.0",
+]
+
+[tool.pyqwe]
+all = [
+    "*(frontend):npm run dev",
+    "*:uv run flask --app app.wsgi:create_app() run --debug --port 5001",
+    "*:watchmedo auto-restart --directory app/websockets --pattern='*.py' --recursive -- python3 websocket_consumer.py",
+    "*:watchmedo auto-restart --directory app/scheduler --pattern='*.py' --recursive -- huey_consumer.py app.scheduler.huey"
+]
+vite = "*(frontend):npm run dev"
+flask = "*:uv run flask --app app/wsgi run --debug --port 5001"
+websocket = "*:watchmedo auto-restart --directory app/websockets --pattern='*.py' --recursive -- python3 websocket_consumer.py"
+scheduler = "*:watchmedo auto-restart --directory app/scheduler --pattern='*.py' --recursive -- huey_consumer.py app.scheduler.huey"
+
+[tool.flask_vite_transporter]
+npm_exec = "npm"
+npx_exec = "npx"
+serve_app = "app/wsgi"
+vite_app.frontend = "frontend"
