@@ -22,6 +22,7 @@ dev = [
 ]
 
 [tool.pyqwe]
+setup-frontend = "*(frontend):npm i"
 all = [
     "*(frontend):npm run dev",
     "*:uv run flask --app app.wsgi:create_app() run --debug --port 5001",
