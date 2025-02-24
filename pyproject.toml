@@ -11,6 +11,7 @@ dependencies = [
     "huey>=2.5.2",
     "pytz>=2025.1",
     "requests>=2.32.3",
+    "websocket-consumer>=0.1.0",
     "websockets>=15.0",
 ]
 
@@ -24,18 +25,18 @@ dev = [
 [tool.pyqwe]
 setup-frontend = "*(frontend):npm i"
 all = [
-    "*(src/frontend):npm run dev",
-    "*(src):uv run flask --app app.wsgi:create_app() run --debug --port 5001",
-    "*(src):watchmedo auto-restart --directory app/websockets --pattern='*.py' --recursive -- python3 websocket_consumer.py",
-    "*(src):watchmedo auto-restart --directory app/scheduler --pattern='*.py' --recursive -- huey_consumer.py app.scheduler.huey"
+    "*(frontend):npm run dev",
+    "*:uv run flask --app app.wsgi:create_app() run --debug --port 5001",
+    "*:watchmedo auto-restart --directory app/websockets --pattern='*.py' --recursive -- websocket_consumer app.websockets.server",
+    "*:watchmedo auto-restart --directory app/scheduler --pattern='*.py' --recursive -- huey_consumer.py app.scheduler.huey"
 ]
-vite = "*(src/frontend):npm run dev"
-flask = "*(src):uv run flask --app app/wsgi run --debug --port 5001"
-websocket = "*(src):watchmedo auto-restart --directory app/websockets --pattern='*.py' --recursive -- python3 src/websocket_consumer.py"
-scheduler = "*(src):watchmedo auto-restart --directory app/scheduler --pattern='*.py' --recursive -- huey_consumer.py app.scheduler.huey"
+vite = "*(frontend):npm run dev"
+flask = "*:uv run flask --app app/wsgi run --debug --port 5001"
+websocket = "*:watchmedo auto-restart --directory app/websockets --pattern='*.py' --recursive -- websocket_consumer app.websockets.server"
+scheduler = "*:watchmedo auto-restart --directory app/scheduler --pattern='*.py' --recursive -- huey_consumer.py app.scheduler.huey"
 
 [tool.flask_vite_transporter]
 npm_exec = "npm"
 npx_exec = "npx"
-serve_app = "src/app/wsgi"
-vite_app.frontend = "src/frontend"
+serve_app = "app/wsgi"
+vite_app.frontend = "frontend"
