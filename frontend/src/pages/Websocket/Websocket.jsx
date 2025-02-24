@@ -19,11 +19,16 @@ export default function Websocket() {
                 <div className={"flex flex-col gap-2 max-w-1/3 mx-auto"}>
                     <button type="button"
                             className="btn-good"
-                            onClick={() => websocketCtx.ws().send("Hello from frontend!")}>
+                            onClick={() => websocketCtx.sendWs(
+                                {
+                                    action: 'echo',
+                                    key: 'super-secret-key',
+                                    data: {'message': 'Hello World'}
+                                }
+                            )}>
                         Send Data
                     </button>
                 </div>
-
 
             </section>
 

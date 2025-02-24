@@ -1,4 +1,4 @@
-import {createContext, createEffect, createSignal, onMount} from "solid-js";
+import {createContext, createSignal, onMount} from "solid-js";
 
 export const WebsocketContext = createContext();
 
@@ -9,16 +9,31 @@ export function WebsocketContextProvider(props) {
     const [ws, setWs] = createSignal(null)
 
     function createWs() {
-        setWs(new WebSocket(ws_base))
+        const ws = new WebSocket(ws_base);
 
-        if (ws().readyState === 1) {
-            ws().addEventListener("open", (event) => {
-                ws().send("Hello Server!");
-            });
+        console.log("Server created");
 
-            ws().addEventListener("message", (event) => {
-                console.log("Message from server ", event.data);
-            });
+        ws.addEventListener("open", (event) => {
+        });
+
+        ws.addEventListener("message", (event) => {
+            console.log(event.data);
+        });
+
+        setWs(ws)
+    }
+
+    function sendWs({action, key, data}) {
+        if (typeof data === 'object') {
+            ws().send(
+                JSON.stringify({
+                    _action: action,
+                    _key: key,
+                    data: data,
+                })
+            )
+        } else {
+            console.error('Data must be a valid object to send.');
         }
     }
 
@@ -28,6 +43,7 @@ export function WebsocketContextProvider(props) {
 
     const pushCtx = {
         ws: ws,
+        sendWs: sendWs,
     };
 
     return (

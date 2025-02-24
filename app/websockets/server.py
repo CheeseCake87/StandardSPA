@@ -1,76 +1,83 @@
-import asyncio
 import typing as t
 
+import orjson
 from websockets import exceptions
+from websockets.asyncio.server import ServerConnection
 from websockets.asyncio.server import serve
 
-from app.utilities.sys_print import sys_print_websockets
+from app import logger
+from app.websockets.actions import action_router
+from app.websockets.authenticate import authenticate
 
 
 class WebsocketServer:
     host: str = "120.0.0.1"
     port: int = 5003
     connections: t.Set = set()
-    authenticated: t.Set = set()
-    lookup: t.Dict = dict()
 
     def __init__(self, host: str = "120.0.0.1", port: int = 5003):
         self.host = host
         self.port = port
 
-    def set_lookup(self, websocket):
-        self.lookup[websocket.id] = websocket
+    async def handler(self, websocket: ServerConnection):
 
-    async def handler(self, websocket):
+        logger.info(f"Incoming connection - {websocket}")
+
         if websocket not in self.connections:
             self.connections.add(websocket)
-            sys_print_websockets(
-                ["Adding new connection", websocket.remote_address]
-            )
+
+            logger.info("New connection stored")
+
+        logger.info("Connection established")
 
         try:
-            sys_print_websockets([
-                f"Connection established: {websocket.remote_address[0]}:{websocket.remote_address[1]}",
-                f"Connections: {self.connections}",
-                f"Authenticated: {self.authenticated}",
-                f"Lookup: {self.lookup}",
-            ])
 
             # Wait for message to come in from connection above
             inbound_msg = await websocket.recv()
 
-            sys_print_websockets([
-                f"Inbound: {inbound_msg}",
-                f"From {websocket.remote_address[0]}:{websocket.remote_address[1]}"
-            ])
+            try:
 
-            # Loop back to handler
+                payload = orjson.loads(inbound_msg)
+
+                # Will look for a key called _key and validate
+                # it towards the database. Will close the connection if not valid
+                await authenticate(payload=payload, websocket=websocket)
+
+                await websocket.send(
+                    orjson.dumps({"info": "Connection authenticated"}),
+                    text=True
+                )
+
+                # Looks for a key called _action and directs the request to
+                # other internal code.
+                await action_router(payload=payload, websocket=websocket)
+
+            except orjson.JSONDecodeError:
+
+                logger.error(f"Invalid JSON message: {inbound_msg}")
+
+                await websocket.send(orjson.dumps({"error": "Invalid Message"}))
+                return
+
+                # Loop back to handler
             await self.handler(websocket)
 
         except exceptions.ConnectionClosedError:
-            sys_print_websockets([
-                f"Connection closed on error: {websocket}"
-            ])
+            logger.error("Connection closed error")
             pass
 
         except exceptions.ConnectionClosedOK:
-            sys_print_websockets([
-                f"Connection closed on ok: {websocket}"
-            ])
+            logger.info("Connection closed OK")
             pass
 
         finally:
             if websocket in self.connections:
-                sys_print_websockets([
-                    f"Removing {websocket} from connections"
-                ])
+                logger.info(f"Removing connection: {websocket}")
                 self.connections.remove(websocket)
 
     async def run(self):
-        sys_print_websockets(["Starting websocket server..."])
+        logger.info("Starting websocket server...")
 
-        async with serve(self.handler, self.host, self.port):
-            sys_print_websockets([
-                f"Websocket server running on {self.host}:{self.port}"
-            ])
-            await asyncio.Future()
+        async with serve(self.handler, self.host, self.port) as server:
+            logger.info(f"Websocket server running on {self.host}:{self.port}")
+            await server.serve_forever()
