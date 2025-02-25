@@ -7,6 +7,7 @@ from websockets.asyncio.server import serve
 
 from app import logger
 from app.websockets.actions import action_router
+from app.websockets.connection_handler import ConnectionHandler
 from app.websockets.authenticate import authenticate
 
 
@@ -21,7 +22,9 @@ class WebsocketServer:
 
     async def handler(self, websocket: ServerConnection):
 
-        logger.info(f"Incoming connection - {websocket}")
+        id_ = websocket.id
+
+        logger.info(f"Incoming connection - {id_}")
 
         if websocket not in self.connections:
             self.connections.add(websocket)
@@ -32,34 +35,11 @@ class WebsocketServer:
 
         try:
 
-            # Wait for message to come in from connection above
             inbound_msg = await websocket.recv()
+            connection = await ConnectionHandler(websocket).decode(inbound_msg)
+            await authenticate(connection=connection)
+            await action_router(connection=connection)
 
-            try:
-
-                payload = orjson.loads(inbound_msg)
-
-                # Will look for a key called _key and validate
-                # it towards the database. Will close the connection if not valid
-                await authenticate(payload=payload, websocket=websocket)
-
-                await websocket.send(
-                    orjson.dumps({"info": "Connection authenticated"}),
-                    text=True
-                )
-
-                # Looks for a key called _action and directs the request to
-                # other internal code.
-                await action_router(payload=payload, websocket=websocket)
-
-            except orjson.JSONDecodeError:
-
-                logger.error(f"Invalid JSON message: {inbound_msg}")
-
-                await websocket.send(orjson.dumps({"error": "Invalid Message"}))
-                return
-
-                # Loop back to handler
             await self.handler(websocket)
 
         except exceptions.ConnectionClosedError:
@@ -72,7 +52,7 @@ class WebsocketServer:
 
         finally:
             if websocket in self.connections:
-                logger.info(f"Removing connection: {websocket}")
+                logger.info(f"Removing connection: {id_}")
                 self.connections.remove(websocket)
 
     async def run(self):
