@@ -1,14 +1,12 @@
 import typing as t
 
-import orjson
 from websockets import exceptions
 from websockets.asyncio.server import ServerConnection
 from websockets.asyncio.server import serve
 
 from app import logger
-from app.websockets.actions import action_router
+from app.websockets.actions import authenticate, action_router
 from app.websockets.connection_handler import ConnectionHandler
-from app.websockets.authenticate import authenticate
 
 
 class WebsocketServer:
