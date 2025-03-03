@@ -308,11 +308,11 @@ wheels = [
 
 [[package]]
 name = "pyqwe"
-version = "2.1.1"
+version = "3.0.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/c8/77/47a2487feea53560da16368a37acc81a654548066fa91c66383fb740546b/pyqwe-2.1.1.tar.gz", hash = "sha256:f595bcf6fe78c05cacd33fa51394707fb49710d2637df032532ee290f67f65f1", size = 12783 }
+sdist = { url = "https://files.pythonhosted.org/packages/a5/25/47828d77e5879100b46191ab645b94f47b917cf05f049a5372f791c686cd/pyqwe-3.0.0.tar.gz", hash = "sha256:ebd0bc49bb370788d08f1bc0f00a0c0a5c21a344fa73cf04d6c469b3258a64b2", size = 13765 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/98/5e/a62558c8a6de043283c3c93a6bc4d9206a75775669de36ea97dd4093e879/pyqwe-2.1.1-py3-none-any.whl", hash = "sha256:7985646b4b3e684943ed65dfe04271642231d9791ab06615bcc43b0fe30356cd", size = 11151 },
+    { url = "https://files.pythonhosted.org/packages/08/19/69c2e1e5b59b8107c20bbc7a090723dc2435cef19d3513fd8d39e82e50e5/pyqwe-3.0.0-py3-none-any.whl", hash = "sha256:19a08a44bf8ad7495cf6994db2d88ea5888892a675129eede4c5ddbd9f51b4a5", size = 11862 },
 ]
 
 [[package]]
@@ -411,7 +411,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "faker", specifier = ">=36.1.1" },
-    { name = "pyqwe", specifier = ">=2.1.1" },
+    { name = "pyqwe", specifier = ">=3.0.0" },
     { name = "watchdog", specifier = ">=6.0.0" },
 ]
 
