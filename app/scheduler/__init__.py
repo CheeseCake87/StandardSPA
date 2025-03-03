@@ -1,3 +1,4 @@
+import orjson
 from huey import SqliteHuey, crontab
 from websockets.sync.client import connect
 
@@ -37,8 +38,15 @@ def send_periodic():
         )
 
     with connect(f"ws://127.0.0.1:5003") as websocket:
-        websocket.send('Hello world!')
+        payload = orjson.dumps({
+            "key": "-",
+            "action": "toast-broadcast",
+            "data": {
+                "message": "Hello!"
+            }
+        })
+        websocket.send(payload)
         sys_print_scheduler([
             "Sending websocket connection",
-            "Sending: Hello world!",
+            f"Sending: {payload}",
         ])

@@ -1,4 +1,4 @@
-from flask import Flask, url_for, redirect
+from flask import Flask
 
 from app.wsgi.config import flask_config, imp_config
 from app.wsgi.extensions import imp, vt, db

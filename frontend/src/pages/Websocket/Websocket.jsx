@@ -11,6 +11,7 @@ export default function Websocket() {
 
     return (
         <>
+
             <section className={'max-w-1/2 mx-auto text-center my-10'}>
                 <h1>StandardSPA - Websocket</h1>
             </section>
@@ -19,17 +20,48 @@ export default function Websocket() {
                 <div className={"flex flex-col gap-2 max-w-1/3 mx-auto"}>
                     <button type="button"
                             className="btn-good"
-                            onClick={() => websocketCtx.sendWs(
+                            onClick={() => websocketCtx.send(
                                 {
-                                    action: 'echo',
                                     key: 'super-secret-key',
+                                    action: 'echo',
                                     data: {'message': 'Hello World'}
                                 }
                             )}>
                         Send Data
                     </button>
                 </div>
+            </section>
 
+            <section className={'max-w-1/2 mx-auto my-10'}>
+                <div className={"flex flex-col gap-2 max-w-1/3 mx-auto"}>
+                    <button type="button"
+                            className="btn-good"
+                            onClick={() => websocketCtx.send(
+                                {
+                                    key: 'super-secret-key',
+                                    action: 'print-connections',
+                                    data: {'message': 'Hello World'}
+                                }
+                            )}>
+                        Print Connections
+                    </button>
+                </div>
+            </section>
+
+            <section className={'max-w-1/2 mx-auto my-10'}>
+                <div className={"flex flex-col gap-2 max-w-1/3 mx-auto"}>
+                    <button type="button"
+                            className="btn-good"
+                            onClick={() => websocketCtx.send(
+                                {
+                                    key: 'super-secret-key',
+                                    action: 'toast',
+                                    data: {'message': 'Hello World'}
+                                }
+                            )}>
+                        Toast
+                    </button>
+                </div>
             </section>
 
             <section className={'max-w-1/2 mx-auto text-center my-10'}>

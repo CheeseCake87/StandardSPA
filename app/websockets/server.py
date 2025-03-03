@@ -36,7 +36,7 @@ class WebsocketServer:
             inbound_msg = await websocket.recv()
             connection = await ConnectionHandler(websocket).decode(inbound_msg)
             await authenticate(connection=connection)
-            await action_router(connection=connection)
+            await action_router(connection=connection, connections=self.connections)
 
             await self.handler(websocket)
 

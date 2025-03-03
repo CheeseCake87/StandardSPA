@@ -8,10 +8,8 @@ async def authenticate(connection: ConnectionHandler):
         await connection.respond({"error": "No key provided"})
         await connection.websocket.close()
 
-    await connection.respond({"info": "Connection authenticated"})
 
-
-async def action_router(connection: ConnectionHandler):
+async def action_router(connection: ConnectionHandler, connections: set = None):
     if not connection.action:
         logger.error("No action provided")
         await connection.respond({"error": "No action provided"})
@@ -20,6 +18,18 @@ async def action_router(connection: ConnectionHandler):
         case "echo":
             from .echo import echo
             await echo(connection)
+
+        case "toast":
+            from .toast import toast
+            await toast(connection)
+
+        case "toast-broadcast":
+            from .toast_broadcast import toast_broadcast
+            await toast_broadcast(connection, connections)
+
+        case "print-connections":
+            from .print_connections import print_connections
+            await print_connections(connection, connections)
 
         case _:
             logger.error(f"Invalid action: {connection.action}")
